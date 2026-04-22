@@ -503,7 +503,7 @@ window.closeStream = function() {
   const reset = () => { stage = 0; clearTimeout(timer); };
   document.addEventListener('keydown', e => {
     if (stage === 0) {
-      if (e.ctrlKey && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'p')) {
         e.preventDefault(); stage = 1; timer = setTimeout(reset, 2000);
       }
     } else if (stage === 1) {
