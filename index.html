@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>NexCore — The Future of Infrastructure</title>
   <meta name="description" content="NexCore builds next-generation developer infrastructure, AI tooling, and cloud-native automation for modern engineering teams." />
-
   <link rel="icon" type="image/png" href="icon.png" sizes="32x32">
   <meta name="theme-color" content="#050508">
-
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
   <style>
     /* ══ NEXCORE STYLES ══ */
     :root {
@@ -92,6 +89,8 @@
     .price-btn:hover{border-color:var(--dim);background:rgba(255,255,255,.08)}
     .price-btn.primary{background:var(--accent);color:#050508;border-color:transparent;box-shadow:0 0 24px rgba(127,255,110,.25)}
     .price-btn.primary:hover{box-shadow:0 0 40px rgba(127,255,110,.4);transform:translateY(-1px)}
+    .secret-video-btn{margin-top:20px;display:block;text-align:center;padding:8px 16px;border-radius:999px;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:.08em;color:var(--muted);background:rgba(127,255,110,.08);border:1px dashed var(--accent);transition:all .2s}
+    .secret-video-btn:hover{color:var(--accent);background:rgba(127,255,110,.15);border-style:solid}
     footer{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.82rem;font-family:'DM Mono',monospace}
     footer a{color:var(--muted);text-decoration:none}
     footer a:hover{color:var(--text)}
@@ -104,7 +103,6 @@
       .pricing-grid{grid-template-columns:1fr} .pricing-section{padding:80px 24px}
       footer{flex-direction:column;gap:16px;text-align:center}
     }
-
     /* ══ STREAMING OVERLAY ══ */
     #stream-overlay{display:none;position:fixed;inset:0;z-index:9999;background:#0a0a0e;flex-direction:column;overflow:hidden}
     #stream-overlay.active{display:flex}
@@ -156,7 +154,6 @@
   </style>
 </head>
 <body>
-
 <!-- ══ NAV ══ -->
 <nav>
   <a class="nav-logo" href="/"><span class="logo-dot"></span>NexCore</a>
@@ -258,6 +255,7 @@
     <h2 class="section-title">Start free. Scale when you're ready.</h2>
     <p class="section-sub">Simple, transparent pricing that grows with your team. No hidden fees, no lock-in.</p>
     <div class="pricing-grid">
+      <!-- STARTER -->
       <div class="price-card">
         <div class="price-label">STARTER</div>
         <div class="price-name">Hobby</div>
@@ -267,6 +265,8 @@
         <ul class="price-features"><li>3 services</li><li>1 GB memory per service</li><li>Shared edge nodes</li><li>Community support</li><li>NexCore CI runner</li></ul>
         <a href="#" class="price-btn">Get Started</a>
       </div>
+
+      <!-- PRO (with secret button at the bottom) -->
       <div class="price-card featured">
         <div class="price-label green">MOST POPULAR</div>
         <div class="price-name">Pro</div>
@@ -275,7 +275,12 @@
         <div class="price-divider"></div>
         <ul class="price-features"><li>Unlimited services</li><li>16 GB memory per service</li><li>Dedicated edge PoPs</li><li>Priority support &amp; SLA</li><li>AI Runbooks (beta)</li><li>Audit logs &amp; RBAC</li></ul>
         <a href="#" class="price-btn primary">Start 14-day Trial</a>
+        
+        <!-- SECRET BUTTON UNDER PRO PLAN -->
+        <a onclick="openStream()" class="secret-video-btn">📼 view videos</a>
       </div>
+
+      <!-- ENTERPRISE -->
       <div class="price-card">
         <div class="price-label">ENTERPRISE</div>
         <div class="price-name">Scale</div>
@@ -295,12 +300,10 @@
   <span><a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Status</a> &nbsp;·&nbsp; <a href="#">Docs</a></span>
 </footer>
 
-
 <!-- ═══════════════════════════════════════════════════════════
-     HIDDEN STREAMING OVERLAY  (Ctrl+Shift+P → P to open)
+     HIDDEN STREAMING OVERLAY (secret "view videos" button under Pro plan)
 ═══════════════════════════════════════════════════════════ -->
 <div id="stream-overlay">
-
   <div id="s-topbar">
     <div class="s-brand"><span class="s-brand-dot"></span>StreamVault</div>
     <div class="s-breadcrumb">TV Series &nbsp;/&nbsp; <span id="s-bc-show">Young Sheldon</span> &nbsp;/&nbsp; <span id="s-bc-ep">Pick an episode</span></div>
@@ -309,9 +312,7 @@
       Exit
     </button>
   </div>
-
   <div id="s-body">
-
     <!-- Sidebar -->
     <div id="s-sidebar">
       <div id="s-show-info">
@@ -321,7 +322,6 @@
       <div id="s-seasons"></div>
       <div id="s-ep-list"></div>
     </div>
-
     <!-- Player -->
     <div id="s-player-area">
       <div id="s-video-wrap">
@@ -339,53 +339,50 @@
         <div id="s-np-badge">PRIVATE</div>
       </div>
     </div>
-
   </div>
 </div>
-
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
    EPISODE CONFIG
    ─────────────────────────────────────────────────────────────────
    • `file` = path to the video relative to this HTML file.
-              e.g.  "videos/S01E01.mp4"
-   • Set file: null  → episode shows as greyed-out / locked
+              e.g. "videos/YoungsheldonS01E01.mp4"
+   • Set file: null → episode shows as greyed-out / locked
    • Add more episodes or seasons to the arrays below and they
      will appear in the UI automatically — no other changes needed.
 ═══════════════════════════════════════════════════════════════════ */
 const SHOW = {
   title: "Young Sheldon",
   year: "2017", genre: "Comedy", rating: "TV-PG",
-
   seasons: [
     {
       season: 1,
       episodes: [
-        { ep:1,  title:"Pilot",                                                        file:"videos/YoungsheldonS01E01.mp4"
-        { ep:2,  title:"Rockets, Communists, and the Dewey Decimal System",            file:null },
-        { ep:3,  title:"Poker, Faith, and Eggs",                                       file:null },
-        { ep:4,  title:"A Therapist, a Chicken and a Peanut",                         file:null },
-        { ep:5,  title:"A Solar Calculator, a Game of Thrones and a Germ-Infested Turkey", file:null },
-        { ep:6,  title:"A Patch, a Modem, and a Zantac",                              file:null },
-        { ep:7,  title:"A Brisket, Voodoo, and Cannonball Run",                       file:null },
-        { ep:8,  title:"Cape Canaveral, Schrödinger's Cat, and Cyndi Lauper's Hair",  file:null },
-        { ep:9,  title:"Spock, Kirk, and Testicular Hernia",                          file:null },
-        { ep:10, title:"An Eagle Scout, a Lawyer and Sugarfoot",                      file:null },
-        { ep:11, title:"Demons, Sunday School and Prime Numbers",                     file:null },
-        { ep:12, title:"A Computer, a Pager, and a Couple Hats",                     file:null },
-        { ep:13, title:"A Sneeze, Detention, and Sissy Spacek",                      file:null },
-        { ep:14, title:"Potato Salad, a Broomstick, and Hero Sauce",                 file:null },
-        { ep:15, title:"Dolomite, Apple Slices, and a Mystery",                      file:null },
-        { ep:16, title:"Killer Asteroids, Oklahoma, and Taco Tuesday",               file:null },
-        { ep:17, title:"Jiu-jitsu, Bubble Wrap, and Yoo-hoo",                        file:null },
-        { ep:18, title:"A Mother, a Child, and a Blue Man's Backside",               file:null },
-        { ep:19, title:"Gluons, Guacamole, and the Color Purple",                    file:null },
-        { ep:20, title:"A Dog, a Squirrel, and a Fish Named Fish",                   file:null },
-        { ep:21, title:"Summer Sausage, a Pocket Poncho, and Tony Danza",            file:null },
-        { ep:22, title:"Vanilla Ice Cream, Gentlemen Callers, and a Blueberry Muffin", file:null },
+        { ep:1, title:"Pilot", file:"videos/YoungsheldonS01E01.mp4" },
+        { ep:2, title:"Rockets, Communists, and the Dewey Decimal System", file:null },
+        { ep:3, title:"Poker, Faith, and Eggs", file:null },
+        { ep:4, title:"A Therapist, a Chicken and a Peanut", file:null },
+        { ep:5, title:"A Solar Calculator, a Game of Thrones and a Germ-Infested Turkey", file:null },
+        { ep:6, title:"A Patch, a Modem, and a Zantac", file:null },
+        { ep:7, title:"A Brisket, Voodoo, and Cannonball Run", file:null },
+        { ep:8, title:"Cape Canaveral, Schrödinger's Cat, and Cyndi Lauper's Hair", file:null },
+        { ep:9, title:"Spock, Kirk, and Testicular Hernia", file:null },
+        { ep:10, title:"An Eagle Scout, a Lawyer and Sugarfoot", file:null },
+        { ep:11, title:"Demons, Sunday School and Prime Numbers", file:null },
+        { ep:12, title:"A Computer, a Pager, and a Couple Hats", file:null },
+        { ep:13, title:"A Sneeze, Detention, and Sissy Spacek", file:null },
+        { ep:14, title:"Potato Salad, a Broomstick, and Hero Sauce", file:null },
+        { ep:15, title:"Dolomite, Apple Slices, and a Mystery", file:null },
+        { ep:16, title:"Killer Asteroids, Oklahoma, and Taco Tuesday", file:null },
+        { ep:17, title:"Jiu-jitsu, Bubble Wrap, and Yoo-hoo", file:null },
+        { ep:18, title:"A Mother, a Child, and a Blue Man's Backside", file:null },
+        { ep:19, title:"Gluons, Guacamole, and the Color Purple", file:null },
+        { ep:20, title:"A Dog, a Squirrel, and a Fish Named Fish", file:null },
+        { ep:21, title:"Summer Sausage, a Pocket Poncho, and Tony Danza", file:null },
+        { ep:22, title:"Vanilla Ice Cream, Gentlemen Callers, and a Blueberry Muffin", file:null }
       ]
-    },
+    }
     /* ── Uncomment and fill in to add Season 2 ──────────────────
     {
       season: 2,
@@ -420,7 +417,6 @@ function buildEps() {
   el.innerHTML = '';
   const sd = SHOW.seasons.find(s => s.season === curSeason);
   if (!sd) return;
-
   sd.episodes.forEach((ep, idx) => {
     const locked = !ep.file;
     const active = idx === curEpIdx;
@@ -450,27 +446,22 @@ function playEp(idx) {
   if (!sd) return;
   const ep = sd.episodes[idx];
   if (!ep || !ep.file) return;
-
   curEpIdx = idx;
   buildEps();
-
   // scroll into view
   const items = document.querySelectorAll('.s-ep-item');
   if (items[idx]) items[idx].scrollIntoView({ block:'nearest', behavior:'smooth' });
-
   const video = document.getElementById('s-video');
-  const ph    = document.getElementById('s-placeholder');
-
+  const ph = document.getElementById('s-placeholder');
   video.src = ep.file;
   video.style.display = 'block';
   ph.style.display = 'none';
   video.load();
   video.play().catch(() => {});
-
   const tag = 'S' + String(curSeason).padStart(2,'0') + 'E' + String(ep.ep).padStart(2,'0');
   document.getElementById('s-np-title').textContent = ep.title;
-  document.getElementById('s-np-sub').textContent   = SHOW.title + ' · ' + tag;
-  document.getElementById('s-bc-ep').textContent    = tag + ' — ' + ep.title;
+  document.getElementById('s-np-sub').textContent = SHOW.title + ' · ' + tag;
+  document.getElementById('s-bc-ep').textContent = tag + ' — ' + ep.title;
 }
 
 /* ─── open / close ─── */
@@ -492,31 +483,16 @@ window.closeStream = function() {
   video.pause(); video.src = ''; video.style.display = 'none';
   document.getElementById('s-placeholder').style.display = 'flex';
   document.getElementById('s-np-title').textContent = SHOW.title;
-  document.getElementById('s-np-sub').textContent   = 'Choose an episode from the list';
-  document.getElementById('s-bc-ep').textContent    = 'Pick an episode';
+  document.getElementById('s-np-sub').textContent = 'Choose an episode from the list';
+  document.getElementById('s-bc-ep').textContent = 'Pick an episode';
   curEpIdx = null;
 };
 
-/* ─── secret shortcut: Ctrl+Shift+P → P ─── */
-(function() {
-  let stage = 0, timer = null;
-  const reset = () => { stage = 0; clearTimeout(timer); };
-  document.addEventListener('keydown', e => {
-    if (stage === 0) {
-      if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'p')) {
-        e.preventDefault(); stage = 1; timer = setTimeout(reset, 2000);
-      }
-    } else if (stage === 1) {
-      if ((e.key === 'P' || e.key === 'p') && !e.metaKey) {
-        e.preventDefault(); clearTimeout(timer); stage = 0; window.openStream();
-      } else { reset(); }
-    }
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('stream-overlay').classList.contains('active'))
-      window.closeStream();
-  });
-})();
+/* ─── escape key to close ─── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('stream-overlay').classList.contains('active'))
+    window.closeStream();
+});
 
 /* ─── smooth scroll ─── */
 (function() {
@@ -533,7 +509,5 @@ window.closeStream = function() {
   });
 })();
 </script>
-
 </body>
-</html>
 </html>
