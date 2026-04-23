@@ -1,30 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NexCore — The Future of Infrastructure</title>
-  <meta name="description" content="NexCore builds next-generation developer infrastructure, AI tooling, and cloud-native automation for modern engineering teams." />
-  <link rel="icon" type="image/png" href="icon.png" sizes="32x32">
-  <meta name="theme-color" content="#050508">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    /* (your entire style block stays exactly the same) */
-    /* ... [paste all your previous <style> content here] ... */
-  </style>
-</head>
-<body>
-  <!-- (your entire HTML stays the same until the script) -->
-  <!-- ... [paste everything from <nav> down to the footer] ... -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NexCore — StreamVault</title>
 
-  <!-- SECRET BUTTON UNDER PRO PLAN (already there) -->
-  <div class="price-card featured">
-    <!-- ... existing Pro card content ... -->
-    <a onclick="openStream()" class="secret-video-btn">📼 view videos</a>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: DM Sans, sans-serif;
+  background: #050508;
+  color: white;
+}
+
+/* NAV */
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid #222;
+}
+
+/* HERO */
+.hero {
+  padding: 80px 40px;
+}
+
+/* BUTTON */
+.secret-video-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #7fff6e;
+  color: black;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* OVERLAY */
+#stream-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  flex-direction: column;
+  z-index: 999;
+}
+
+#stream-overlay.active {
+  display: flex;
+}
+
+/* TOP BAR */
+.stream-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #222;
+}
+
+/* CONTENT */
+.stream-body {
+  display: flex;
+  height: 100%;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 280px;
+  border-right: 1px solid #222;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.season-btn {
+  padding: 8px;
+  margin: 5px 0;
+  background: #111;
+  cursor: pointer;
+}
+
+.season-btn.active {
+  background: #7fff6e;
+  color: black;
+}
+
+/* EPISODES */
+.episode {
+  padding: 10px;
+  margin: 5px 0;
+  background: #111;
+  cursor: pointer;
+}
+
+.episode.active {
+  background: #7fff6e;
+  color: black;
+}
+
+/* PLAYER */
+.player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+video {
+  width: 80%;
+  max-height: 70vh;
+  background: black;
+}
+
+.placeholder {
+  color: #888;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div><b>NexCore</b></div>
+  <div>StreamVault Demo</div>
+</nav>
+
+<div class="hero">
+  <h1>Next Gen Streaming Platform</h1>
+  <p>Click below to open video system</p>
+
+  <div class="secret-video-btn" onclick="openStream()">
+    📼 View Videos
+  </div>
+</div>
+
+<!-- STREAM OVERLAY -->
+<div id="stream-overlay">
+
+  <div class="stream-top">
+    <div id="title">Young Sheldon</div>
+    <button onclick="closeStream()">Close</button>
   </div>
 
-  <!-- STREAMING OVERLAY (same as before) -->
-  <div id="stream-overlay"> ... </div>
+  <div class="stream-body">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h3>Seasons</h3>
+      <div id="seasons"></div>
+
+      <h3>Episodes</h3>
+      <div id="episodes"></div>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="player">
+      <video id="video" controls></video>
+      <div class="placeholder" id="placeholder">Select an episode</div>
+    </div>
+
+  </div>
+</div>
 
 <script>
 const SHOW = {
@@ -33,77 +172,89 @@ const SHOW = {
     {
       season: 1,
       episodes: [
-        { ep:1, title:"Pilot", file:"videos/YoungsheldonS01E01.mp4" },
-        { ep:2, title:"Rockets, Communists, and the Dewey Decimal System", file:null },
-        // ... rest of your episodes
+        { ep: 1, title: "Pilot", file: "videos/YoungsheldonS01E01.mp4" },
+        { ep: 2, title: "Rockets and Science", file: "videos/ep2.mp4" },
+        { ep: 3, title: "School Day", file: null }
+      ]
+    },
+    {
+      season: 2,
+      episodes: [
+        { ep: 1, title: "New Beginnings", file: "videos/s2e1.mp4" }
       ]
     }
   ]
 };
 
-let curSeason = 1, curEpIdx = null;
+let currentSeason = 0;
 
-// === DEBUG HELPER ===
-function logVideoStatus(msg) {
-  console.log('%c[StreamVault] ' + msg, 'color:#7fff6e; font-weight:bold');
+function openStream() {
+  document.getElementById("stream-overlay").classList.add("active");
+  renderSeasons();
+  loadSeason(0);
 }
 
-// === BUILD FUNCTIONS (unchanged) ===
-function buildSeasons() { /* same as before */ }
-function buildEps() { /* same as before */ }
+function closeStream() {
+  document.getElementById("stream-overlay").classList.remove("active");
+}
 
-function playEp(idx) {
-  const sd = SHOW.seasons.find(s => s.season === curSeason);
-  if (!sd) return;
-  const ep = sd.episodes[idx];
-  if (!ep || !ep.file) return;
+function renderSeasons() {
+  const container = document.getElementById("seasons");
+  container.innerHTML = "";
 
-  curEpIdx = idx;
-  buildEps();
+  SHOW.seasons.forEach((s, i) => {
+    const div = document.createElement("div");
+    div.className = "season-btn";
+    div.innerText = "Season " + s.season;
+    div.onclick = () => loadSeason(i);
+    container.appendChild(div);
+  });
+}
 
-  const video = document.getElementById('s-video');
-  const ph = document.getElementById('s-placeholder');
+function loadSeason(index) {
+  currentSeason = index;
 
-  logVideoStatus('Attempting to load: ' + ep.file);
+  document.querySelectorAll(".season-btn").forEach((b, i) => {
+    b.classList.toggle("active", i === index);
+  });
+
+  const epContainer = document.getElementById("episodes");
+  epContainer.innerHTML = "";
+
+  SHOW.seasons[index].episodes.forEach((ep, i) => {
+    const div = document.createElement("div");
+    div.className = "episode";
+    div.innerText = "EP " + ep.ep + " - " + ep.title;
+
+    div.onclick = () => playEpisode(i);
+
+    epContainer.appendChild(div);
+  });
+}
+
+function playEpisode(i) {
+  const ep = SHOW.seasons[currentSeason].episodes[i];
+
+  document.querySelectorAll(".episode").forEach((e, idx) => {
+    e.classList.toggle("active", idx === i);
+  });
+
+  const video = document.getElementById("video");
+  const placeholder = document.getElementById("placeholder");
+
+  if (!ep.file) {
+    placeholder.innerText = "No video available";
+    video.style.display = "none";
+    return;
+  }
+
+  placeholder.style.display = "none";
+  video.style.display = "block";
 
   video.src = ep.file;
-  video.style.display = 'block';
-  ph.style.display = 'none';
-
-  video.load();
-
-  video.play()
-    .then(() => logVideoStatus('✅ Video started playing'))
-    .catch(err => {
-      console.error('%c[StreamVault] Play failed:', err);
-      logVideoStatus('❌ Could not play video – check console for details');
-    });
-
-  // update UI
-  const tag = 'S' + String(curSeason).padStart(2,'0') + 'E' + String(ep.ep).padStart(2,'0');
-  document.getElementById('s-np-title').textContent = ep.title;
-  document.getElementById('s-np-sub').textContent = SHOW.title + ' · ' + tag;
-  document.getElementById('s-bc-ep').textContent = tag + ' — ' + ep.title;
+  video.play().catch(() => {});
 }
-
-window.openStream = function() {
-  document.getElementById('stream-overlay').classList.add('active');
-  buildSeasons();
-  buildEps();
-
-  const sd = SHOW.seasons.find(s => s.season === curSeason);
-  if (sd) {
-    const first = sd.episodes.findIndex(e => e.file);
-    if (first !== -1) playEp(first);
-  }
-};
-
-window.closeStream = function() { /* same as before */ };
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && document.getElementById('stream-overlay').classList.contains('active'))
-    window.closeStream();
-});
 </script>
+
 </body>
 </html>
