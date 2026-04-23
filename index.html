@@ -197,25 +197,13 @@
     .s-ph-text{font-family:'DM Mono',monospace;font-size:.72rem;color:rgba(255,255,255,.18);letter-spacing:.1em}
 
     /* Drive iframe */
-    #s-drive-frame{width:100%;height:100%;border:none;display:none;background:#000}
-
-    /* ── Pop-out button cover ──
-       A black block that sits over the top-right corner of the
-       iframe where Google Drive renders the "pop out" button.
-       pointer-events:none so it doesn't block other UI. */
-    #s-drive-cover{
-      position:absolute;
-      top:0;
-      right:0;
-      width:60px;
-      height:52px;
-      z-index:5;
-      background:#000;
-      display:none;
-      pointer-events:none;
+    #s-drive-frame{
+      position:absolute;top:-40px;left:0;
+      width:100%;height:calc(100% + 40px);
+      border:none;display:none;background:#000
     }
 
-    /* infobar */
+        /* infobar */
     #s-infobar{flex:0 0 auto;padding:13px 24px;background:rgba(9,9,15,.95);border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(8px)}
     #s-np-title{font-size:.88rem;font-weight:600;color:rgba(255,255,255,.85)}
     #s-np-sub{font-family:'DM Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.25);letter-spacing:.04em;margin-top:3px}
@@ -242,6 +230,7 @@
     }
   </style>
   <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -462,9 +451,6 @@
           referrerpolicy="no-referrer"
         ></iframe>
 
-        <!-- Covers the Google Drive pop-out button in the top-right corner -->
-        <div id="s-drive-cover"></div>
-
       </div>
 
       <div id="s-infobar">
@@ -576,18 +562,15 @@ function playEp(idx) {
   const ph    = document.getElementById('s-placeholder');
   const load  = document.getElementById('s-loading');
   const frame = document.getElementById('s-drive-frame');
-  const cover = document.getElementById('s-drive-cover');
 
   ph.style.display    = 'none';
   frame.style.display = 'none';
-  cover.style.display = 'none';
   load.classList.add('active');
 
   const url = drivePreviewUrl(ep.driveId);
   frame.onload = () => {
     load.classList.remove('active');
     frame.style.display = 'block';
-    cover.style.display = 'block'; /* show cover once iframe is visible */
   };
   frame.src = url;
 
@@ -601,10 +584,8 @@ function resetPlayer() {
   const ph    = document.getElementById('s-placeholder');
   const load  = document.getElementById('s-loading');
   const frame = document.getElementById('s-drive-frame');
-  const cover = document.getElementById('s-drive-cover');
   frame.src            = 'about:blank';
   frame.style.display  = 'none';
-  cover.style.display  = 'none';
   load.classList.remove('active');
   ph.style.display = 'flex';
   document.getElementById('s-np-title').textContent = SHOW.title;
